@@ -19,9 +19,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".SearchActivity" />
-        <activity android:name=".DirectionsActivity" />
+        <activity android:name=".DirectionsActivity" android:label="Navigating"/>
         <activity android:name=".DistanceActivity" />
-        <activity android:name=".WaitingForTagActivity"></activity>
+        <activity android:name=".WaitingForTagActivity" android:label="Waiting for tag"/>
     </application>
 
 </manifest>

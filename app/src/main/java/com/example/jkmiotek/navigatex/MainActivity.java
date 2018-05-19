@@ -19,10 +19,6 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void startDirections(View view) {
-        Intent intent = new Intent(this, DirectionsActivity.class);
-        startActivity(intent);
-    }
 
     public void startFreeNavigation(View view){
         Intent intent = new Intent(this, WaitingForTagActivity.class);

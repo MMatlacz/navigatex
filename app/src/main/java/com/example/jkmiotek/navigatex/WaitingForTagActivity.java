@@ -3,12 +3,16 @@ package com.example.jkmiotek.navigatex;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
 
 import com.example.jkmiotek.navigatex.Connector.Callback;
 import com.example.jkmiotek.navigatex.Connector.Requester;
 
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 
 class WaitingForTagCallback implements Callback{
@@ -35,6 +39,8 @@ public class WaitingForTagActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_waiting_for_tag);
 
+        textAnimationStart((TextView) findViewById(R.id.waitingForTag));
+
         WaitingForTagCallback callback = new WaitingForTagCallback(this.getApplicationContext());
         Requester requester = new Requester(
             this.getApplicationContext(),
@@ -44,5 +50,28 @@ public class WaitingForTagActivity extends AppCompatActivity {
         requester.startCalling();
     }
 
+    private void textAnimationStart(final TextView view) {
+        final Handler handler = new Handler(Looper.getMainLooper());
+        final Runnable runnable = new Runnable() {
+            int loadingIndex = 0;
 
+            @Override
+            public void run() {
+                switch (loadingIndex % 3) {
+                    case 0:
+                        view.setText("Waiting for tag.  ");
+                        break;
+                    case 1:
+                        view.setText("Waiting for tag.. ");
+                        break;
+                    case 2:
+                        view.setText("Waiting for tag...");
+                        break;
+                }
+                loadingIndex++;
+                handler.postDelayed(this, 500);
+            }
+        };
+        handler.post(runnable);
+    }
 }
