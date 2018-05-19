@@ -22,4 +22,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivity(intent);
     }
+
+    public void startDirections(View view) {
+        Intent intent = new Intent(MainActivity.this, DirectionsActivity.class);
+        startActivity(intent);
+    }
 }
