@@ -9,6 +9,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,8 +27,20 @@ public class DistanceActivity extends Activity implements SensorEventListener {
     boolean activityRunning;
     private SensorManager sensorManager;
     private Integer distance;
+    private Integer half_distance;
+    private String destinationId;
     private TextView count;
     private TextToSpeech tts;
+
+    public static JSONObject getJsonObject(JSONObject jsonObject, String key) {
+        JSONObject jsonObject1 = null;
+        try {
+            jsonObject1 = (JSONObject) jsonObject.get(key);
+        } catch (JSONException | NullPointerException | ClassCastException e) {
+            jsonObject1 = null;
+        }
+        return jsonObject1;
+    }
 
     public void getDistanceToNextToken() {
         String url = getResources().getString(R.string.baseUrl) + "/api/last_step";
@@ -36,7 +49,16 @@ public class DistanceActivity extends Activity implements SensorEventListener {
             @Override
             public void call(JSONObject jsonObject) {
                 try {
-                    count.setText((String) jsonObject.get("token_id"));
+                    String currentTokenId = jsonObject.getString("id");
+                    Log.v("CURRENTOKEN", distance.toString());
+                    Log.v("CURRENTOKEN", currentTokenId);
+                    if (currentTokenId.equals(destinationId)) {
+                        Intent intent = new Intent(getApplicationContext(), DirectionsActivity.class);
+                        intent.putExtra("lastTag", jsonObject.toString());
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        getApplicationContext().startActivity(intent);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -47,15 +69,24 @@ public class DistanceActivity extends Activity implements SensorEventListener {
         requester.startCalling();
     }
 
+    public void postSelectedToken(String tokenId) {
+        String url = getResources().getString(R.string.baseUrl) + "/api/publish_step?token_id=" + tokenId;
+
+        Requester requester = new Requester(this.getApplicationContext(), url, null);
+        requester.startCalling();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_distance);
         count = findViewById(R.id.estimated_distance);
-        getDistanceToNextToken();
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        distance = 0;
+        distance = getIntent().getIntExtra("distance", 0);
+        half_distance = distance / 2;
+        destinationId = getIntent().getStringExtra("destinationId");
+        count.setText(distance.toString() + " steps left");
 
         tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
@@ -65,7 +96,7 @@ public class DistanceActivity extends Activity implements SensorEventListener {
                 }
             }
         });
-        tts.speak(count.getText().toString(), TextToSpeech.QUEUE_FLUSH, null, null);
+        tts.speak(count.getText().toString(), TextToSpeech.QUEUE_ADD, null, null);
     }
 
     @Override
@@ -98,9 +129,18 @@ public class DistanceActivity extends Activity implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (activityRunning) {
-            distance += 1;
+            if (distance > 0)
+                distance -= 1;
+
+            else if (distance < 0)
+                distance = 0;
+
+            if (distance <= half_distance) {
+                getDistanceToNextToken();
+            }
+
             if (distance % 10 == 0) {
-                count.setText(distance.toString());
+                count.setText(distance.toString() + " steps left");
                 tts.speak(count.getText().toString(), TextToSpeech.QUEUE_FLUSH, null, null);
             }
         }

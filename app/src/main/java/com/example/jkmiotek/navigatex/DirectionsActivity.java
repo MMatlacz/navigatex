@@ -11,6 +11,8 @@ import android.widget.Button;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class DirectionsActivity extends AppCompatActivity {
     JSONObject lastTag;
     Button ahead_btn;
@@ -26,6 +28,21 @@ public class DirectionsActivity extends AppCompatActivity {
             jsonObject1 = null;
         }
         return jsonObject1;
+    }
+
+    void setButtonInfo(Button button, JSONObject sides, String key) {
+        JSONObject side;
+        try {
+            side = getJsonObject(sides, key);
+            button.setContentDescription(side.getString("description"));
+            ArrayList<String> parameters = new ArrayList<>();
+            parameters.add(side.get("distance").toString());
+            parameters.add(getJsonObject(side, "destination").getString("id"));
+            button.setTag(parameters);
+        } catch (JSONException | NullPointerException e) {
+            Log.v("TOKEN", "Error in back");
+            button.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -51,40 +68,13 @@ public class DirectionsActivity extends AppCompatActivity {
         Log.v("TOKEN", sides != null ? sides.toString() : "");
 
 
-        JSONObject side;
+        JSONObject side = null;
         if (sides != null) {
             Log.v("TOKEN", "In sides");
-            try {
-                side = getJsonObject(sides, "back");
-                back_btn.setContentDescription(side.getString("description"));
-            } catch (JSONException | NullPointerException e) {
-                Log.v("TOKEN", "Error in back");
-                back_btn.setVisibility(View.GONE);
-            }
-
-            try {
-                side = getJsonObject(sides, "front");
-                ahead_btn.setContentDescription(side.getString("description"));
-            } catch (JSONException | NullPointerException e) {
-                Log.v("TOKEN", "Error in front");
-                ahead_btn.setVisibility(View.GONE);
-            }
-
-            try {
-                side = getJsonObject(sides, "left");
-                left_btn.setContentDescription(side.getString("description"));
-            } catch (JSONException | NullPointerException e) {
-                Log.v("TOKEN", "Error in left");
-                left_btn.setVisibility(View.GONE);
-            }
-
-            try {
-                side = getJsonObject(sides, "right");
-                right_btn.setContentDescription(side.getString("description"));
-            } catch (JSONException | NullPointerException e) {
-                Log.v("TOKEN", "Error in right");
-                right_btn.setVisibility(View.GONE);
-            }
+            setButtonInfo(ahead_btn, sides, "front");
+            setButtonInfo(left_btn, sides, "left");
+            setButtonInfo(right_btn, sides, "right");
+            setButtonInfo(back_btn, sides, "back");
         }
     }
 
@@ -97,7 +87,14 @@ public class DirectionsActivity extends AppCompatActivity {
     }
 
     public void showDistance(View view) {
+        Button button = (Button) view;
+        ArrayList<String> parameters = (ArrayList<String>) button.getTag();
+
         Intent intent = new Intent(DirectionsActivity.this, DistanceActivity.class);
+        Log.v("DISTANCE", parameters.get(0));
+        Log.v("DISTANCE", parameters.get(1));
+        intent.putExtra("distance", Integer.valueOf(parameters.get(0)));
+        intent.putExtra("destinationId", parameters.get(1));
         startActivity(intent);
     }
 }
