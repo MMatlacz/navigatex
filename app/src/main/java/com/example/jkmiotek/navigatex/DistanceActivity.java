@@ -8,6 +8,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.TextView;
@@ -96,7 +97,15 @@ public class DistanceActivity extends Activity implements SensorEventListener {
                 }
             }
         });
-        tts.speak(count.getText().toString(), TextToSpeech.QUEUE_ADD, null, null);
+        final Handler handler = new Handler();
+        handler.postDelayed(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        tts.speak(count.getText().toString(), TextToSpeech.QUEUE_ADD, null, null);
+                    }
+                }, 1000);
+
     }
 
     @Override

@@ -27,7 +27,7 @@ class WaitingForTagCallback implements Callback {
     public void call(JSONObject jsonObject) {
         Intent intent = new Intent(context, DirectionsActivity.class);
         intent.putExtra("lastTag", jsonObject.toString());
-        intent.putExtra("destinationTag", destinationTag);
+        intent.putExtra("destinationTagId", destinationTag);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);

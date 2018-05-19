@@ -1,9 +1,13 @@
 package com.example.jkmiotek.navigatex;
 
+import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -12,13 +16,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Objects;
 
-public class DirectionsActivity extends AppCompatActivity {
+public class DirectionsActivity extends Activity {
     JSONObject lastTag;
+    static String destinationTagId;
+    String currentTagId;
     Button ahead_btn;
     Button left_btn;
     Button right_btn;
     Button back_btn;
+    private TextToSpeech tts;
 
     public static JSONObject getJsonObject(JSONObject jsonObject, String key) {
         JSONObject jsonObject1 = null;
@@ -55,6 +64,49 @@ public class DirectionsActivity extends AppCompatActivity {
         } catch (JSONException | NullPointerException e) {
             e.printStackTrace();
         }
+
+        try {
+            destinationTagId = getIntent().getStringExtra("destinationTagId");
+        } catch (Exception e) {
+            destinationTagId = null;
+        }
+
+        try {
+            currentTagId = lastTag.getString("id");
+        } catch (JSONException e) {
+            currentTagId = null;
+        }
+
+        Log.v("TAGS", currentTagId + " " + destinationTagId);
+        if (Objects.equals(currentTagId, destinationTagId)) {
+            tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+                @Override
+                public void onInit(int status) {
+                    if (status != TextToSpeech.ERROR) {
+                        tts.setLanguage(Locale.UK);
+                    }
+                }
+            });
+            final Handler handler = new Handler();
+            handler.postDelayed(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            AlertDialog.Builder alertDialog = new AlertDialog
+                                    .Builder(DirectionsActivity.this)
+                                    .setMessage("You have reached your destination!")
+                                    .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                        @Override
+                                        public void onDismiss(DialogInterface dialog) {
+                                            DirectionsActivity.this.onBackPressed();
+                                        }
+                                    });
+                            alertDialog.show();
+                        }
+                    }, 1000);
+
+        }
+
 
         Log.v("TOKEN", lastTag.toString());
 
