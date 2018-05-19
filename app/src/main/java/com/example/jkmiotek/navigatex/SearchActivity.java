@@ -56,9 +56,10 @@ public class SearchActivity extends AppCompatActivity {
         setupSearchEdit(this.getApplicationContext());
 
         SearchCallback callback = new SearchCallback(this);
+        String url = getResources().getString(R.string.baseUrl) + "/api/nodes";
         Requester requester = new Requester(
                 this.getApplicationContext(),
-                "http://46.101.204.240:8000/api/nodes",
+                url,
                 callback
         );
         requester.startCalling();
