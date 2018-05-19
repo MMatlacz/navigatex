@@ -103,7 +103,7 @@ public class DirectionsActivity extends Activity {
                                     });
                             alertDialog.show();
                         }
-                    }, 1000);
+                    }, 1200);
 
         }
 
