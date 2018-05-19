@@ -12,13 +12,12 @@ import com.example.jkmiotek.navigatex.Connector.Callback;
 import com.example.jkmiotek.navigatex.Connector.Requester;
 
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 
-class WaitingForTagCallback implements Callback{
+class WaitingForTagCallback implements Callback {
     private Context context;
 
-    public WaitingForTagCallback(Context context){
+    public WaitingForTagCallback(Context context) {
         this.context = context;
     }
 
@@ -43,10 +42,11 @@ public class WaitingForTagActivity extends AppCompatActivity {
         textAnimationStart((TextView) findViewById(R.id.waitingForTag));
 
         WaitingForTagCallback callback = new WaitingForTagCallback(this.getApplicationContext());
+        String url = getResources().getString(R.string.baseUrl) + "/api/last_step";
         Requester requester = new Requester(
-            this.getApplicationContext(),
-            "https://navigatex.herokuapp.com/api/last_step",
-            callback
+                this.getApplicationContext(),
+                url,
+                callback
         );
         requester.startCalling();
     }
