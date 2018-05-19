@@ -10,17 +10,44 @@ import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jkmiotek.navigatex.Connector.Callback;
+import com.example.jkmiotek.navigatex.Connector.Requester;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+
 public class DistanceActivity extends Activity implements SensorEventListener {
 
     boolean activityRunning;
     private SensorManager sensorManager;
+    private Integer distance;
     private TextView count;
+
+    public void getDistanceToNextToken() {
+        String url = "https://navigatex.herokuapp.com/api/last_step";
+
+        Callback callback = new Callback() {
+            @Override
+            public void call(JSONObject jsonObject) {
+                try {
+                    count.setText((String) jsonObject.get("token_id"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Requester requester = new Requester(this.getApplicationContext(), url, callback);
+        requester.startCalling();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_distance);
         count = findViewById(R.id.estimated_distance);
+        getDistanceToNextToken();
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
     }

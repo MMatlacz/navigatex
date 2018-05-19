@@ -4,5 +4,5 @@
     <string name="right">right</string>
     <string name="left">left</string>
     <string name="back">back</string>
-    <string name="textviewDistance">TextView</string>
+    <string name="textviewDistance">Waiting For Distance Info</string>
 </resources>
