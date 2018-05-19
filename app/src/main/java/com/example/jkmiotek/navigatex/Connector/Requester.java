@@ -14,11 +14,9 @@ public class Requester {
 
     private String request_url;
     private RequestQueue requestQueue;
-    private Context context;
     private Callback callback;
 
     public Requester(final Context context, String url, Callback callback) {
-        this.context = context;
         this.callback = callback;
         request_url = url;
         requestQueue = QueueSingleton.getInstance(context).getRequestQueue();
