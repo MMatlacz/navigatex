@@ -7,10 +7,12 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jkmiotek.navigatex.Connector.Callback;
@@ -22,6 +24,16 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+
+class SearchEntity {
+    public String name;
+    public String description;
+
+    public SearchEntity(String name, String description){
+        this.name = name;
+        this.description = description;
+    }
+}
 
 class SearchCallback implements Callback {
     private SearchActivity searchActivity;
@@ -70,9 +82,8 @@ public class SearchActivity extends AppCompatActivity {
                 try {
                     JSONObject nodeData = filteredNodes.getJSONObject(position);
                     Intent intent = new Intent(parent.getContext(), WaitingForTagActivity.class);
-                    intent.putExtra("destinationTag", nodeData.toString());
+                    intent.putExtra("destinationTagId", nodeData.getString("id"));
                     startActivity(intent);
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -93,25 +104,42 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
-    private ArrayList<String> prepareFilteredList() throws JSONException {
-        ArrayList<String> filteredList = new ArrayList<>();
+    private ArrayList<SearchEntity> prepareFilteredList() throws JSONException {
+        ArrayList<SearchEntity> filteredList = new ArrayList<>();
         for (int i=0; i< filteredNodes.length(); i++ ) {
             JSONObject json_data = filteredNodes.getJSONObject(i);
-            filteredList.add(json_data.getString("name"));
+            filteredList.add(
+                    new SearchEntity(
+                            json_data.getString("name"),
+                            json_data.getString("description")
+                    )
+            );
         }
+
         return filteredList;
     }
 
     public void prepareSearchResults(String searchText)  {
         try {
             filterNodes(searchText);
-            ArrayList<String> filteredList = prepareFilteredList();
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(
+            final ArrayList<SearchEntity> filteredLists = prepareFilteredList();
+            ArrayAdapter<SearchEntity> adapter = new ArrayAdapter<SearchEntity>(
                     this,
-                    android.R.layout.simple_list_item_1,
+                    android.R.layout.simple_list_item_2 ,
                     android.R.id.text1,
-                    filteredList
-            );
+                    filteredLists
+            ){
+                @Override
+                public View getView(int position, View convertView, ViewGroup parent){
+                    View view = super.getView(position, convertView, parent);
+                    TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+                    TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+
+                    text1.setText(filteredLists.get(position).name);
+                    text2.setText(filteredLists.get(position).description);
+                    return view;
+                }
+            };
             listView.setAdapter(adapter);
         } catch (JSONException e) {
             e.printStackTrace();

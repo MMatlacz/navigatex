@@ -46,7 +46,7 @@ public class WaitingForTagActivity extends AppCompatActivity {
 
         WaitingForTagCallback callback = new WaitingForTagCallback(
                 this.getApplicationContext(),
-                getIntent().getStringExtra("directionTag")
+                getIntent().getStringExtra("destinationTagId")
         );
         String url = getResources().getString(R.string.baseUrl) + "/api/last_step";
 
