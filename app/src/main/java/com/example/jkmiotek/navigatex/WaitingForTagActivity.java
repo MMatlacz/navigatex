@@ -2,8 +2,8 @@ package com.example.jkmiotek.navigatex;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import com.example.jkmiotek.navigatex.Connector.Callback;
 import com.example.jkmiotek.navigatex.Connector.Requester;
@@ -22,6 +22,7 @@ class WaitingForTagCallback implements Callback{
     public void call(JSONObject jsonObject) {
         Intent intent = new Intent(context, DirectionsActivity.class);
         intent.putExtra("lastTag", jsonObject.toString());
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 }
