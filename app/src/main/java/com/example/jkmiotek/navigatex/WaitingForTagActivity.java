@@ -12,20 +12,22 @@ import com.example.jkmiotek.navigatex.Connector.Callback;
 import com.example.jkmiotek.navigatex.Connector.Requester;
 
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 
 class WaitingForTagCallback implements Callback{
     private Context context;
+    private String destinationTag;
 
-    public WaitingForTagCallback(Context context){
+    public WaitingForTagCallback(Context context, String destinationTag){
         this.context = context;
+        this.destinationTag = destinationTag;
     }
 
     @Override
     public void call(JSONObject jsonObject) {
         Intent intent = new Intent(context, DirectionsActivity.class);
         intent.putExtra("lastTag", jsonObject.toString());
+        intent.putExtra("destinationTag", destinationTag);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);
@@ -42,7 +44,10 @@ public class WaitingForTagActivity extends AppCompatActivity {
 
         textAnimationStart((TextView) findViewById(R.id.waitingForTag));
 
-        WaitingForTagCallback callback = new WaitingForTagCallback(this.getApplicationContext());
+        WaitingForTagCallback callback = new WaitingForTagCallback(
+                this.getApplicationContext(),
+                getIntent().getStringExtra("directionTag")
+        );
         Requester requester = new Requester(
             this.getApplicationContext(),
             "https://navigatex.herokuapp.com/api/last_step",
