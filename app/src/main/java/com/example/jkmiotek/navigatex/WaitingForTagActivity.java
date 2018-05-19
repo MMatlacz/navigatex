@@ -14,11 +14,11 @@ import com.example.jkmiotek.navigatex.Connector.Requester;
 import org.json.JSONObject;
 
 
-class WaitingForTagCallback implements Callback{
+class WaitingForTagCallback implements Callback {
     private Context context;
     private String destinationTag;
 
-    public WaitingForTagCallback(Context context, String destinationTag){
+    public WaitingForTagCallback(Context context, String destinationTag) {
         this.context = context;
         this.destinationTag = destinationTag;
     }
@@ -48,10 +48,12 @@ public class WaitingForTagActivity extends AppCompatActivity {
                 this.getApplicationContext(),
                 getIntent().getStringExtra("directionTag")
         );
+        String url = getResources().getString(R.string.baseUrl) + "/api/last_step";
+
         Requester requester = new Requester(
-            this.getApplicationContext(),
-            "https://navigatex.herokuapp.com/api/last_step",
-            callback
+                this.getApplicationContext(),
+                url,
+                callback
         );
         requester.startCalling();
     }

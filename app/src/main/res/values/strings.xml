@@ -5,4 +5,5 @@
     <string name="left">left</string>
     <string name="back">back</string>
     <string name="textviewDistance">Waiting For Distance Info</string>
+    <string name="baseUrl">http://46.101.204.240:8000</string>
 </resources>

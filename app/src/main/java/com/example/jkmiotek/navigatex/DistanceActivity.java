@@ -30,7 +30,7 @@ public class DistanceActivity extends Activity implements SensorEventListener {
     private TextToSpeech tts;
 
     public void getDistanceToNextToken() {
-        String url = "https://navigatex.herokuapp.com/api/last_step";
+        String url = getResources().getString(R.string.baseUrl) + "/api/last_step";
 
         Callback callback = new Callback() {
             @Override
