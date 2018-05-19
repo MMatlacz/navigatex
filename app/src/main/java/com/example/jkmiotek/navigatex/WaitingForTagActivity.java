@@ -27,6 +27,7 @@ class WaitingForTagCallback implements Callback{
         Intent intent = new Intent(context, DirectionsActivity.class);
         intent.putExtra("lastTag", jsonObject.toString());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);
     }
 }
