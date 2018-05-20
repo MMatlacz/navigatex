@@ -100,10 +100,8 @@ public class DirectionsActivity extends Activity {
             e.printStackTrace();
         }
 
-        try {
+        if (destinationTagId == null){
             destinationTagId = getIntent().getStringExtra("destinationTagId");
-        } catch (Exception e) {
-            destinationTagId = null;
         }
 
         if (destinationTagId != null){
@@ -160,7 +158,6 @@ public class DirectionsActivity extends Activity {
         Log.v("TOKEN", sides != null ? sides.toString() : "");
 
 
-        JSONObject side = null;
         if (sides != null) {
             Log.v("TOKEN", "In sides");
             setButtonInfo(ahead_btn, sides, "front");
