@@ -56,6 +56,7 @@ public class DistanceActivity extends Activity implements SensorEventListener {
                     if (currentTokenId.equals(destinationId)) {
                         Intent intent = new Intent(getApplicationContext(), DirectionsActivity.class);
                         intent.putExtra("lastTag", jsonObject.toString());
+                        intent.putExtra("destinationTagId", destinationId);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         getApplicationContext().startActivity(intent);

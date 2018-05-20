@@ -10,7 +10,11 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.Button;
+
+import com.example.jkmiotek.navigatex.Connector.Callback;
+import com.example.jkmiotek.navigatex.Connector.Requester;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,6 +22,37 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Objects;
+
+class NavigationCallback implements Callback {
+    private DirectionsActivity directionsActivity;
+    public NavigationCallback(DirectionsActivity directionActivity){
+        this.directionsActivity = directionActivity;
+    }
+
+    @Override
+    public void call(JSONObject jsonObject) {
+        try {
+            String destinationDirection = jsonObject.getString("side");
+            switch (destinationDirection){
+                case "front":
+                    directionsActivity.ahead_btn.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                    break;
+                case "left":
+                    directionsActivity.left_btn.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                    break;
+                case "right":
+                    directionsActivity.right_btn.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                    break;
+                case "back":
+                    directionsActivity.back_btn.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                    break;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
 
 public class DirectionsActivity extends Activity {
     JSONObject lastTag;
@@ -43,7 +78,7 @@ public class DirectionsActivity extends Activity {
         JSONObject side;
         try {
             side = getJsonObject(sides, key);
-            button.setContentDescription(side.getString("description"));
+            button.setContentDescription(key + "!." + side.getString("description"));
             ArrayList<String> parameters = new ArrayList<>();
             parameters.add(side.get("distance").toString());
             parameters.add(getJsonObject(side, "destination").getString("id"));
@@ -70,6 +105,11 @@ public class DirectionsActivity extends Activity {
         } catch (Exception e) {
             destinationTagId = null;
         }
+
+        if (destinationTagId != null){
+            fetchDestination();
+        }
+
 
         try {
             currentTagId = lastTag.getString("id");
@@ -129,6 +169,14 @@ public class DirectionsActivity extends Activity {
             setButtonInfo(back_btn, sides, "back");
         }
     }
+
+    private void fetchDestination(){
+        NavigationCallback callback = new NavigationCallback(this);
+        String url = getResources().getString(R.string.baseUrl) + "/api/find_path?id=" + destinationTagId;
+        Requester requester = new Requester(this.getApplicationContext(), url, callback);
+        requester.startCalling();
+    }
+
 
     @Override
     public void onBackPressed() {

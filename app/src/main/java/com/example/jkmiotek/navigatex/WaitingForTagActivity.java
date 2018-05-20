@@ -15,22 +15,28 @@ import org.json.JSONObject;
 
 
 class WaitingForTagCallback implements Callback {
-    private Context context;
+    private WaitingForTagActivity activity;
     private String destinationTag;
 
-    public WaitingForTagCallback(Context context, String destinationTag) {
-        this.context = context;
+    public WaitingForTagCallback(WaitingForTagActivity activity, String destinationTag) {
+        this.activity = activity;
         this.destinationTag = destinationTag;
     }
 
     @Override
     public void call(JSONObject jsonObject) {
-        Intent intent = new Intent(context, DirectionsActivity.class);
+
+        if (jsonObject.length() == 0){
+            this.activity.getLastStep();
+            return;
+        }
+
+        Intent intent = new Intent(activity, DirectionsActivity.class);
         intent.putExtra("lastTag", jsonObject.toString());
         intent.putExtra("destinationTagId", destinationTag);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        context.startActivity(intent);
+        activity.startActivity(intent);
     }
 }
 
@@ -44,9 +50,12 @@ public class WaitingForTagActivity extends AppCompatActivity {
 
         textAnimationStart((TextView) findViewById(R.id.waitingForTag));
 
+        getLastStep();
+    }
+
+    public void getLastStep() {
         WaitingForTagCallback callback = new WaitingForTagCallback(
-                this.getApplicationContext(),
-                getIntent().getStringExtra("destinationTagId")
+                this, getIntent().getStringExtra("destinationTagId")
         );
         String url = getResources().getString(R.string.baseUrl) + "/api/last_step";
 
