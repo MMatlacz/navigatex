@@ -1,6 +1,5 @@
 package com.example.jkmiotek.navigatex;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +7,7 @@ import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
@@ -54,7 +54,7 @@ class NavigationCallback implements Callback {
 }
 
 
-public class DirectionsActivity extends Activity {
+public class DirectionsActivity extends AppCompatActivity {
     JSONObject lastTag;
     static String destinationTagId;
     String currentTagId;
@@ -96,6 +96,8 @@ public class DirectionsActivity extends Activity {
 
         try {
             lastTag = new JSONObject(getIntent().getStringExtra("lastTag"));
+            JSONObject nodeDescription = lastTag.getJSONObject("node_description");
+            this.setTitle("Navigating from: " + nodeDescription.getString("name"));
         } catch (JSONException | NullPointerException e) {
             e.printStackTrace();
         }
@@ -141,7 +143,7 @@ public class DirectionsActivity extends Activity {
                                     });
                             alertDialog.show();
                         }
-                    }, 1200);
+                    }, 0);
 
         }
 
@@ -180,6 +182,8 @@ public class DirectionsActivity extends Activity {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        destinationTagId = null;
         getApplicationContext().startActivity(intent);
     }
 
