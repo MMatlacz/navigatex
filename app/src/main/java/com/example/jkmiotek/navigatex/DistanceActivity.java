@@ -56,7 +56,6 @@ public class DistanceActivity extends Activity implements SensorEventListener {
                     if (currentTokenId.equals(destinationId)) {
                         Intent intent = new Intent(getApplicationContext(), DirectionsActivity.class);
                         intent.putExtra("lastTag", jsonObject.toString());
-                        intent.putExtra("destinationTagId", destinationId);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         getApplicationContext().startActivity(intent);
@@ -68,13 +67,6 @@ public class DistanceActivity extends Activity implements SensorEventListener {
         };
 
         Requester requester = new Requester(this.getApplicationContext(), url, callback);
-        requester.startCalling();
-    }
-
-    public void postSelectedToken(String tokenId) {
-        String url = getResources().getString(R.string.baseUrl) + "/api/publish_step?token_id=" + tokenId;
-
-        Requester requester = new Requester(this.getApplicationContext(), url, null);
         requester.startCalling();
     }
 

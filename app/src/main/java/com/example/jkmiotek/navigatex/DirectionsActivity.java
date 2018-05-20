@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -30,26 +31,34 @@ class NavigationCallback implements Callback {
     }
 
     @Override
-    public void call(JSONObject jsonObject) {
-        try {
-            String destinationDirection = jsonObject.getString("side");
-            switch (destinationDirection){
-                case "front":
-                    directionsActivity.ahead_btn.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
-                    break;
-                case "left":
-                    directionsActivity.left_btn.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
-                    break;
-                case "right":
-                    directionsActivity.right_btn.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
-                    break;
-                case "back":
-                    directionsActivity.back_btn.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
-                    break;
+    public void call(final JSONObject jsonObject) {
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String destinationDirection = jsonObject.getString("side");
+                    switch (destinationDirection) {
+                        case "front":
+                            directionsActivity.ahead_btn.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                            break;
+                        case "left":
+                            directionsActivity.left_btn.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                            break;
+                        case "right":
+                            directionsActivity.right_btn.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                            break;
+                        case "back":
+                            directionsActivity.back_btn.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        }, 1000);
     }
 }
 
@@ -132,18 +141,22 @@ public class DirectionsActivity extends AppCompatActivity {
                     new Runnable() {
                         @Override
                         public void run() {
-                            AlertDialog.Builder alertDialog = new AlertDialog
-                                    .Builder(DirectionsActivity.this)
-                                    .setMessage("You have reached your destination!")
-                                    .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                        @Override
-                                        public void onDismiss(DialogInterface dialog) {
-                                            DirectionsActivity.this.onBackPressed();
-                                        }
-                                    });
-                            alertDialog.show();
+                            try {
+                                AlertDialog.Builder alertDialog = new AlertDialog
+                                        .Builder(DirectionsActivity.this)
+                                        .setMessage("You have reached your destination!")
+                                        .setPositiveButton("Finish", null)
+                                        .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                            @Override
+                                            public void onDismiss(DialogInterface dialog) {
+                                                DirectionsActivity.this.onBackPressed();
+                                            }
+                                        });
+                                alertDialog.show();
+                            }
+                            catch (Exception e) {e.printStackTrace();}
                         }
-                    }, 0);
+                    }, 1000);
 
         }
 
